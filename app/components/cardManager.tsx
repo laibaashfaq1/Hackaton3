@@ -13,7 +13,6 @@ interface Product {
   tags: string[];
   discountPercentage?: number;
   isNew?: boolean;
-  slug: any;
 }
 
 const getProducts = async () => {
@@ -62,11 +61,6 @@ export default function CardManager({ product }: { product: Product }) {
     }
   }
 
-  const handleRemoveFromCart = (product_id: string) => {
-    const newData = cart.filter((item: Product) => item._id !== product_id);
-    setCart(newData);
-    console.log("Removed product with ID:", product_id);
-  };
 
   if (!product) {
     return <p>No product found.</p>;

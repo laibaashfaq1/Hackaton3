@@ -5,6 +5,7 @@ import { GoTrophy } from "react-icons/go";
 import { AiOutlineSafetyCertificate } from "react-icons/ai";
 import { MdOutlineLocalShipping } from "react-icons/md";
 import { RiCustomerService2Line } from "react-icons/ri";
+import Image from "next/image";
 
 export default function PCompare() {
     return (
@@ -37,7 +38,7 @@ export default function PCompare() {
                             {/* Product 1 */}
                             <div className="bg-white p-4 rounded-md shadow-md w-full sm:w-60">
                                 <Link href="/SingleProduct">
-                                    <img
+                                    <Image
                                         src="/Group 160.png"
                                         alt="Asgaard Sofa"
                                         className="w-full h-40 object-cover rounded-md mb-4"
@@ -51,7 +52,7 @@ export default function PCompare() {
                             {/* Product 2 */}
                             <div className="bg-white p-4 rounded-md shadow-md w-full sm:w-60">
                                 <Link href="/SingleProduct">
-                                    <img
+                                    <Image
                                         src="/Group 157.png"
                                         alt="Outdoor Sofa Set"
                                         className="w-full h-40 object-cover rounded-md mb-4"

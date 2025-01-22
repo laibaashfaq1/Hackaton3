@@ -162,6 +162,41 @@ export default function Shop() {
           ))}
         </div>
       </section>
+
+       {/* Footer */}
+       <footer className="bg-pink-100 py-8">
+        <div className="container mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div>
+            <GoTrophy size={40} className="mx-auto text-gray-800" />
+            <h4 className="font-bold text-gray-800">High Quality</h4>
+            <p className="text-gray-600 text-sm">Crafted from top materials</p>
+          </div>
+          <div>
+            <AiOutlineSafetyCertificate
+              size={40}
+              className="mx-auto text-gray-800"
+            />
+            <h4 className="font-bold text-gray-800">Warranty Protection</h4>
+            <p className="text-gray-600 text-sm">Over 2 years</p>
+          </div>
+          <div>
+            <MdOutlineLocalShipping
+              size={40}
+              className="mx-auto text-gray-800"
+            />
+            <h4 className="font-bold text-gray-800">Free Shipping</h4>
+            <p className="text-gray-600 text-sm">Orders over $50</p>
+          </div>
+          <div>
+            <RiCustomerService2Line
+              size={40}
+              className="mx-auto text-gray-800"
+            />
+            <h4 className="font-bold text-gray-800">24/7 Support</h4>
+            <p className="text-gray-600 text-sm">Dedicated support</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import Image from "next/image";
 import { client } from "@/sanity/lib/client";
 import CardManager from "../components/cardManager";
 
+
 export default async function Hero () {
   const query=`*[_type=='product'][0..5]{
       _id,
