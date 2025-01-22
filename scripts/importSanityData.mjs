@@ -2,11 +2,11 @@ import { createClient } from "@sanity/client";
 
 const client = createClient({
   // id remove krni ha deploy ka time
-  projectId: "rqnv8r2d",
+  projectId:NEXT_PUBLIC_SANITY_PROJECT_ID,
   dataset: "production",
   useCdn: true,
   apiVersion: "2025-01-13",
-  token: "skFPir0stosQm5GV3cmY1vOTDPn8QZapOjRqPLDQtVASlFOynedt3BUCS7YJ85FpXAKfxfDI8Pc8ruCBC5rOWOBa7oOJrCHtGzNdaNGTvf8NX1vRrUYBeAmyx01Ix2vYtdDQVdchJWIrr3Sk3QDmtsDzG3C71pNZigv4LlxK7N0XeDXjulDD"
+  token: SANITY_API_TOKEN
   ,
 });
 
