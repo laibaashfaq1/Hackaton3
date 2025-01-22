@@ -33,7 +33,7 @@ const getProducts = async () => {
   return product;
 };
 
-export default function CardManager({ product }: { product: Product }) {
+export default function CardManager() {
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<Product[]>([]);
 
@@ -45,28 +45,20 @@ export default function CardManager({ product }: { product: Product }) {
     fetchProducts();
   }, []);
 
-  function handleAddToCart(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
-    event.preventDefault();
-    
-    if (product) {
-      // Check if the product is already in the cart
-      const isProductInCart = cart.some((cartItem) => cartItem._id === product._id);
+  function handleAddToCart(product: Product): void {
+    // Check if the product is already in the cart
+    const isProductInCart = cart.some((cartItem) => cartItem._id === product._id);
 
-      if (isProductInCart) {
-        console.log(`Product "${product.title}" is already in the cart.`);
-      } else {
-        setCart((prevCart) => [...prevCart, product]);
-        console.log(`Product "${product.title}" added to the cart.`);
-      }
+    if (isProductInCart) {
+      console.log(`Product "${product.title}" is already in the cart.`);
     } else {
-      console.error("Product is not available to add to cart.");
+      setCart((prevCart) => [...prevCart, product]);
+      console.log(`Product "${product.title}" added to the cart.`);
     }
   }
 
-
-
-  if (!product) {
-    return <p>No product found.</p>;
+  if (products.length === 0) {
+    return <p>Loading products...</p>;
   }
 
   return (
@@ -80,47 +72,51 @@ export default function CardManager({ product }: { product: Product }) {
 
       {/* Products Grid */}
       <div className="display grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {/* Single Product Card */}
-        <div className="relative border rounded-lg bg-white shadow hover:shadow-lg transition transform hover:-translate-y-1 group overflow-hidden">
-          {/* Labels */}
-          {product.isNew && (
-            <div className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
-              New
+        {products.map((product) => (
+          <div
+            key={product._id}
+            className="relative border rounded-lg bg-white shadow hover:shadow-lg transition transform hover:-translate-y-1 group overflow-hidden"
+          >
+            {/* Labels */}
+            {product.isNew && (
+              <div className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                New
+              </div>
+            )}
+            {product.discountPercentage !== undefined && (
+              <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                {product.discountPercentage}% off
+              </div>
+            )}
+
+            {/* Product Image */}
+            <Link href={`/product/${product._id}`}>
+              <Image
+                src={product.productImage ? urlFor(product.productImage).url() : "/fallback-image.jpg"}
+                alt={product.title}
+                className="w-full h-44 object-contain rounded-md"
+                width={300}
+                height={200}
+              />
+            </Link>
+
+            {/* Product Name */}
+            <h4 className="mt-4 font-semibold text-gray-800 ml-4">{product.title}</h4>
+
+            {/* Price */}
+            <div className="flex items-center gap-2 mt-2 ml-4 mb-4">
+              <p className="text-green-800 font-semibold text-sm">$ {product.price}</p>
             </div>
-          )}
-          {product.discountPercentage !== undefined && (
-            <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-              {product.discountPercentage}% off
-            </div>
-          )}
 
-          {/* Product Image */}
-          {/* Link Card to SingleProduct Detail */}
-          <Link href={`/product/${product._id}`}>
-            <Image
-              src={product.productImage ? urlFor(product.productImage).url() : "/fallback-image.jpg"} // Add fallback URL
-              alt={product.title}
-              className="w-full h-44 object-contain rounded-md"
-              width={300}
-              height={200}
-            />
-          </Link>
-
-          {/* Product Name */}
-          <h4 className="mt-4 font-semibold text-gray-800 ml-4">{product.title}</h4>
-
-          {/* Price */}
-          <div className="flex items-center gap-2 mt-2 ml-4 mb-4">
-            <p className="text-green-800 font-semibold text-sm">$ {product.price}</p>
+            {/* Add to Cart Button */}
+            <button
+              onClick={() => handleAddToCart(product)}
+              className="w-full py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-yellow-500 transition"
+            >
+              Add to Cart
+            </button>
           </div>
-
-          {/* Add to Cart Button */}
-          <button
-            onClick={handleAddToCart}
-            className="w-full py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-yellow-500 transition">
-            Add to Cart
-          </button>
-        </div>
+        ))}
       </div>
 
       {/* Show More Button */}
