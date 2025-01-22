@@ -1,3 +1,5 @@
+'use client'
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { urlFor } from "@/sanity/lib/image";
@@ -60,6 +62,7 @@ export default function CardManager({ product }: { product: Product }) {
       console.error("Product is not available to add to cart.");
     }
   }
+
 
 
   if (!product) {

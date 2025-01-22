@@ -1,7 +1,5 @@
-'use client';
 
 import Browse from "../components/Browse";
-
 import Rooms from "../components/Rooms";
 import FurnitureGallery from "../components/Furniture";
 import Image from "next/image";

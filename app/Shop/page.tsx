@@ -15,7 +15,7 @@ interface MoreProduct {
   _id: string;
   title: string;
   description: string;
-  productImage: any;
+  productImage: undefined;
   price: number;
   tags: string[];
   discountPercentage?: number;
