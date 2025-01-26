@@ -11,6 +11,7 @@ import Link from "next/link";
 import { FaFacebook } from "react-icons/fa6";
 import { AiFillTwitterCircle } from "react-icons/ai";
 import { FaLinkedin } from "react-icons/fa6";
+import { useCart } from "@/app/Cart/context/CartContext";
 
 interface ProductDetail {
   _id: string;
@@ -26,6 +27,9 @@ interface ProductDetail {
 
 export default function Page({ params: { id } }: { params: { id: string } }) {
   const [product, setProduct] = useState<ProductDetail | null>(null);
+  const { addToCart } = useCart();
+    const [selectedColor] = useState<string>("");
+    const [selectedSize] = useState<string>("");
 
   useEffect(() => {
     if (!id) {
@@ -132,13 +136,23 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
           </div>
 
           <div className="flex space-x-4">
+            {/* Add to Cart Button */}
             <button
-            className="flex items-center px-6 py-2 bg-black text-white font-medium rounded hover:bg-yellow-500"
-            onClick={handleAddToCart}
-             >
-             <IoCartOutline size={20} className="mr-2" />
-              <span>Add to Cart</span>
-            </button>
+                  onClick={() =>
+                    addToCart({
+                      id: product._id,
+                      heading: product.title,
+                      price: product.price,
+                      image: urlFor(product.productImage).url(),
+                      quantity: 1,
+                      selectedColor: selectedColor,
+                      selectedSize: selectedSize,
+                    })
+                  }
+                  className="w-full py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-yellow-500 transition"
+                >
+                  Add to Cart
+                </button>
              <Link href="/PCompare">
               <button className="px-6 py-2 border border-black text-black rounded hover:bg-black hover:text-white">
               Compare

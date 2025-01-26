@@ -12,6 +12,13 @@ import { IoIosMenu } from "react-icons/io";
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const icons = [
+    { icon: <CgProfile />, link: "/profile", label: "Profile" },
+    { icon: <IoSearchSharp />, link: "/search", label: "Search" },
+    { icon: <FaRegHeart />, link: "/wishlist", label: "Wishlist" },
+    { icon: <BsCart3 />, link: "/Cart", label: "Cart" },
+  ];
+
   return (
     <header className="bg-white border-b shadow-sm">
       <div className="container mx-auto px-4 lg:px-8 flex justify-between items-center h-16">
@@ -28,22 +35,22 @@ const Navbar = () => {
         {/* Navigation Links (hidden on smaller screens) */}
         <nav className="hidden md:flex space-x-8">
           <ul className="flex space-x-8">
-            <li className="menulink">
+            <li>
               <Link href="/Hero" className="text-gray-600 hover:text-black">
                 Home
               </Link>
             </li>
-            <li className="menulink">
+            <li>
               <Link href="/Shop" className="text-gray-600 hover:text-black">
                 Shop
               </Link>
             </li>
-            <li className="menulink">
+            <li>
               <Link href="/Blog" className="text-gray-600 hover:text-black">
                 Blog
               </Link>
             </li>
-            <li className="menulink">
+            <li>
               <Link href="/Contact" className="text-gray-600 hover:text-black">
                 Contact
               </Link>
@@ -55,18 +62,23 @@ const Navbar = () => {
         <button
           className="md:hidden text-gray-600 text-2xl"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle Menu"
         >
           <IoIosMenu />
         </button>
 
-        {/* Icons */}
+        {/* Desktop Icons */}
         <div className="hidden md:flex items-center space-x-6">
-          <CgProfile className="text-gray-600 text-xl cursor-pointer hover:text-black" />
-          <IoSearchSharp className="text-gray-600 text-xl cursor-pointer hover:text-black" />
-          <FaRegHeart className="text-gray-600 text-xl cursor-pointer hover:text-black" />
-          <Link href="/Cart" className="text-gray-600 hover:text-black">
-            <BsCart3 className="text-gray-600 text-xl cursor-pointer hover:text-black" />
-          </Link>
+          {icons.map((iconItem, index) => (
+            <Link
+              key={index}
+              href={iconItem.link}
+              className="text-gray-600 hover:text-black"
+              aria-label={iconItem.label}
+            >
+              {iconItem.icon}
+            </Link>
+          ))}
         </div>
       </div>
 
@@ -92,12 +104,16 @@ const Navbar = () => {
 
       {/* Mobile Icons */}
       <div className="md:hidden flex justify-evenly items-center py-2 border-t">
-        <CgProfile className="text-gray-600 text-xl cursor-pointer hover:text-black" />
-        <IoSearchSharp className="text-gray-600 text-xl cursor-pointer hover:text-black" />
-        <FaRegHeart className="text-gray-600 text-xl cursor-pointer hover:text-black" />
-        <Link href="/Cart" className="text-gray-600 hover:text-black">
-          <BsCart3 className="text-gray-600 text-xl cursor-pointer hover:text-black" />
-        </Link>
+        {icons.map((iconItem, index) => (
+          <Link
+            key={index}
+            href={iconItem.link}
+            className="text-gray-600 hover:text-black"
+            aria-label={iconItem.label}
+          >
+            {iconItem.icon}
+          </Link>
+        ))}
       </div>
     </header>
   );

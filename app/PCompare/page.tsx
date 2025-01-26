@@ -41,6 +41,8 @@ export default function PCompare() {
                                     <Image
                                         src="/Group 160.png"
                                         alt="Asgaard Sofa"
+                                        width={100}
+                                        height={100}
                                         className="w-full h-40 object-cover rounded-md mb-4"
                                     />
                                 </Link>
@@ -55,6 +57,8 @@ export default function PCompare() {
                                     <Image
                                         src="/Group 157.png"
                                         alt="Outdoor Sofa Set"
+                                        width={100}
+                                        height={40}
                                         className="w-full h-40 object-cover rounded-md mb-4"
                                     />
                                 </Link>

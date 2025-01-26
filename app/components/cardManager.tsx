@@ -1,10 +1,10 @@
-'use client'
-
-import Image from 'next/image';
-import Link from 'next/link';
+"use client";
+import { useCart } from "@/app/Cart/context/CartContext";
+import Image from "next/image";
+import Link from "next/link";
 import { urlFor } from "@/sanity/lib/image";
-import { useState, useEffect } from 'react';
-import { client } from '@/sanity/lib/client';
+import { useState, useEffect } from "react";
+import { client } from "@/sanity/lib/client";
 
 interface Product {
   _id: string;
@@ -18,24 +18,31 @@ interface Product {
 }
 
 const getProducts = async () => {
-  const product = await client.fetch(
-    `*[_type=='product'][0..5]{
-      _id,
-      title,
-      description,
-      price,
-      productImage,
-      tags,
-      discountPercentage,
-      isNew
-    }`
-  );
-  return product;
+  try {
+    const product = await client.fetch(
+      `*[_type=='product'][0..5]{
+        _id,
+        title,
+        description,
+        price,
+        productImage,
+        tags,
+        discountPercentage,
+        isNew
+      }`
+    );
+    return product;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return [];
+  }
 };
 
 export default function CardManager() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [cart, setCart] = useState<Product[]>([]);
+  const [selectedColor] = useState<string>(""); // Default empty string
+  const [selectedSize] = useState<string>(""); // Default empty string
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -44,18 +51,6 @@ export default function CardManager() {
     };
     fetchProducts();
   }, []);
-
-  function handleAddToCart(product: Product): void {
-    // Check if the product is already in the cart
-    const isProductInCart = cart.some((cartItem) => cartItem._id === product._id);
-
-    if (isProductInCart) {
-      console.log(`Product "${product.title}" is already in the cart.`);
-    } else {
-      setCart((prevCart) => [...prevCart, product]);
-      console.log(`Product "${product.title}" added to the cart.`);
-    }
-  }
 
   if (products.length === 0) {
     return <p>Loading products...</p>;
@@ -92,7 +87,7 @@ export default function CardManager() {
             {/* Product Image */}
             <Link href={`/product/${product._id}`}>
               <Image
-                src={product.productImage ? urlFor(product.productImage).url() : "/fallback-image.jpg"}
+                src={product.productImage ? urlFor(product.productImage)?.url() : "/fallback-image.jpg"}
                 alt={product.title}
                 className="w-full h-44 object-contain rounded-md"
                 width={300}
@@ -110,7 +105,17 @@ export default function CardManager() {
 
             {/* Add to Cart Button */}
             <button
-              onClick={() => handleAddToCart(product)}
+              onClick={() =>
+                addToCart({
+                  id: product._id,
+                  heading: product.title,
+                  price: product.price,
+                  image: product.productImage ? urlFor(product.productImage)?.url() : "",
+                  quantity: 1,
+                  selectedColor,
+                  selectedSize,
+                })
+              }
               className="w-full py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-yellow-500 transition"
             >
               Add to Cart

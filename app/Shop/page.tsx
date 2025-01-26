@@ -10,12 +10,13 @@ import { client } from "@/sanity/lib/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { urlFor } from "@/sanity/lib/image";
+import { useCart } from "../Cart/context/CartContext";
 
 interface MoreProduct {
   _id: string;
   title: string;
   description: string;
-  productImage: undefined;
+  productImage: any; // Updated to `any` for Sanity Image Source compatibility
   price: number;
   tags: string[];
   discountPercentage?: number;
@@ -35,6 +36,9 @@ const fetchProducts = async () => {
 
 export default function Shop() {
   const [products, setProducts] = useState<MoreProduct[]>([]);
+  const { addToCart } = useCart();
+  const [selectedColor] = useState<string>("");
+  const [selectedSize] = useState<string>("");
 
   useEffect(() => {
     const getProducts = async () => {
@@ -43,17 +47,6 @@ export default function Shop() {
     };
     getProducts();
   }, []);
-
-  function handleAddToCart(product: MoreProduct): void {
-    if (typeof window !== "undefined") {
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      const updatedCart = [...cart, product];
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-      alert(`${product.title} has been added to your cart.`);
-    } else {
-      console.error("Local storage is not available.");
-    }
-  }
 
   return (
     <div>
@@ -123,8 +116,8 @@ export default function Shop() {
                         : "/fallback-image.jpg"
                     }
                     alt={product.title}
-                    layout="fill"
-                    objectFit="contain"
+                    fill
+                    style={{ objectFit: "contain" }}
                     className="rounded-md"
                   />
                 </Link>
@@ -152,7 +145,17 @@ export default function Shop() {
                 </div>
                 {/* Add to Cart Button */}
                 <button
-                  onClick={() => handleAddToCart(product)}
+                  onClick={() =>
+                    addToCart({
+                      id: product._id,
+                      heading: product.title,
+                      price: product.price,
+                      image: urlFor(product.productImage).url(),
+                      quantity: 1,
+                      selectedColor: selectedColor,
+                      selectedSize: selectedSize,
+                    })
+                  }
                   className="w-full py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-yellow-500 transition"
                 >
                   Add to Cart
@@ -163,8 +166,8 @@ export default function Shop() {
         </div>
       </section>
 
-       {/* Footer */}
-       <footer className="bg-pink-100 py-8">
+      {/* Footer */}
+      <footer className="bg-pink-100 py-8">
         <div className="container mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <div>
             <GoTrophy size={40} className="mx-auto text-gray-800" />
