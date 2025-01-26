@@ -19,7 +19,7 @@ interface Product {
 
 const getProducts = async () => {
   try {
-    const product = await client.fetch(
+    return await client.fetch(
       `*[_type=='product'][0..5]{
         _id,
         title,
@@ -31,10 +31,9 @@ const getProducts = async () => {
         isNew
       }`
     );
-    return product;
   } catch (error) {
     console.error("Error fetching products:", error);
-    return [];
+    return []; // Fallback data
   }
 };
 

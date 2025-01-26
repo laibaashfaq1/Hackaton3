@@ -1,17 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  images:{
+  images: {
     remotePatterns: [
       {
-        protocol:'https',
-        hostname:'cdn.sanity.io',
-      }
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+      },
     ],
+    domains: ["cdn.sanity.io"], // This ensures Sanity's image domain is whitelisted
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: true, // Not recommended for production; consider fixing errors instead
   },
 };
 
