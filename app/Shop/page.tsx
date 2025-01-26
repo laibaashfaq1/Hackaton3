@@ -11,12 +11,13 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { urlFor } from "@/sanity/lib/image";
 import { useCart } from "../Cart/context/CartContext";
+import { SanityImageSource } from "@sanity/image-url/lib/types/types"; // Correct type for productImage
 
 interface MoreProduct {
   _id: string;
   title: string;
   description: string;
-  productImage: any; // Updated to `any` for Sanity Image Source compatibility
+  productImage: SanityImageSource; // Updated type
   price: number;
   tags: string[];
   discountPercentage?: number;
