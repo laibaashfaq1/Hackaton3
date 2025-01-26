@@ -5,7 +5,6 @@ import Image from "next/image";
 import { PortableTextBlock } from "@portabletext/types";
 import { urlFor } from "@/sanity/lib/image";
 import { PortableText } from "next-sanity";
-import { IoCartOutline } from "react-icons/io5";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaFacebook } from "react-icons/fa6";
@@ -28,15 +27,15 @@ interface ProductDetail {
 export default function Page({ params: { id } }: { params: { id: string } }) {
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const { addToCart } = useCart();
-    const [selectedColor] = useState<string>("");
-    const [selectedSize] = useState<string>("");
+  const [selectedColor] = useState<string>("");
+  const [selectedSize] = useState<string>("");
 
   useEffect(() => {
     if (!id) {
       console.error("Product ID is undefined.");
       return;
     }
-    
+
     const fetchProduct = async () => {
       const query = `
         *[_type == "product" && _id == $id][0] {
@@ -74,7 +73,15 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
   function handleAddToCart(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
     event.preventDefault();
     if (product) {
-      console.log(`Adding product ${product.title} to cart`);
+      addToCart({
+        id: product._id,
+        heading: product.title,
+        price: product.price,
+        image: urlFor(product.productImage).url(),
+        quantity: 1,
+        selectedColor: selectedColor,
+        selectedSize: selectedSize,
+      });
     } else {
       console.error("Product is not available to add to cart.");
     }
@@ -138,28 +145,17 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
           <div className="flex space-x-4">
             {/* Add to Cart Button */}
             <button
-                  onClick={() =>
-                    addToCart({
-                      id: product._id,
-                      heading: product.title,
-                      price: product.price,
-                      image: urlFor(product.productImage).url(),
-                      quantity: 1,
-                      selectedColor: selectedColor,
-                      selectedSize: selectedSize,
-                    })
-                  }
-                  className="w-full py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-yellow-500 transition"
-                >
-                  Add to Cart
-                </button>
-             <Link href="/PCompare">
+              onClick={handleAddToCart}
+              className="w-full py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-yellow-500 transition"
+            >
+              Add to Cart
+            </button>
+            <Link href="/PCompare">
               <button className="px-6 py-2 border border-black text-black rounded hover:bg-black hover:text-white">
-              Compare
+                Compare
               </button>
-             </Link>
-           </div>
-
+            </Link>
+          </div>
 
           <div className="mt-6">
             <p className="text-gray-700">
@@ -168,14 +164,14 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
             <p className="text-gray-700">
               <span className="font-medium">Category:</span> Sofas
             </p>
-            {/* share icon */}
+            {/* Share icons */}
             <div className="flex items-center space-x-4 mt-6">
               <span className="font-medium text-gray-700">Share:</span>
               <FaFacebook size={24} className="cursor-pointer" />
               <AiFillTwitterCircle size={28} className="cursor-pointer" />
               <FaLinkedin size={26} className="cursor-pointer" />
             </div>
-            {/* tags */}
+            {/* Tags */}
             <div className="mt-4 flex flex-wrap">
               {product.tags.map((tag) => (
                 <span
@@ -186,7 +182,6 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
                 </span>
               ))}
             </div>
-
           </div>
         </div>
       </div>
@@ -196,7 +191,6 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
           <button className="px-4 py-2 text-gray-900 border-b-2 border-black font-medium">
             Description
           </button>
-          
         </div>
         <div className="mt-4 text-gray-700">
           <p>{product.description}</p>
@@ -209,6 +203,3 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
     </section>
   );
 }
-
-
-
