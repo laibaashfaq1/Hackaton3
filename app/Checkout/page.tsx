@@ -54,7 +54,6 @@ export const CheckoutPage = () => {
     const storedItems = getCartItems();
     setCartItems(storedItems);
     console.log("Cart Items Retrieved:", storedItems);
-    
 
     const appliedDiscount = localStorage.getItem("appliedDiscount");
     if (appliedDiscount) {
