@@ -1,4 +1,8 @@
 type Product = {
+    quantity: number;
+    image(image: React.JSX.Element): unknown;
+    image: React.JSX.Element;
+    inventory: number;
     _id: string;
     title: string;
     description: string;

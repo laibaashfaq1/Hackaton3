@@ -13,8 +13,8 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const icons = [
-    { icon: <CgProfile />, link: "/profile", label: "Profile" },
-    { icon: <IoSearchSharp />, link: "/search", label: "Search" },
+    { icon: <CgProfile />, link: "/Profile", label: "Profile" },
+    { icon: <IoSearchSharp />, link: "/SearchBar", label: "Search" },
     { icon: <FaRegHeart />, link: "/wishlist", label: "Wishlist" },
     { icon: <BsCart3 />, link: "/Cart", label: "Cart" },
   ];

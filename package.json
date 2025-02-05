@@ -20,14 +20,17 @@
     "react-hot-toast": "^2.5.1",
     "react-icons": "^5.4.0",
     "react-redux": "^9.2.0",
+    "react-toastify": "^11.0.3",
     "sanity": "^3.70.0",
-    "styled-components": "^6.1.14"
+    "styled-components": "^6.1.14",
+    "sweetalert2": "^11.15.10"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/prop-types": "^15.7.14",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-toastify": "^4.0.2",
     "eslint": "^8",
     "eslint-config-next": "15.0.4",
     "postcss": "^8",

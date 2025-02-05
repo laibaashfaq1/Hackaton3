@@ -1,33 +1,176 @@
-'use client';
+'use client'
 
-import Image from "next/image";
-import { GoTrophy } from "react-icons/go";
-import { AiOutlineSafetyCertificate } from "react-icons/ai";
-import { MdOutlineLocalShipping } from "react-icons/md";
-import { RiCustomerService2Line } from "react-icons/ri";
+import { urlFor } from '@/sanity/lib/image'
+import Image from 'next/image'
+import Link from 'next/link'
+import React, { useEffect, useState } from 'react'
+import { CgChevronRight } from 'react-icons/cg'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2'
 
-const Checkout = () => {
+export const CheckoutPage = () => {
+  const [cartItems, setCartItems] = useState<Product[]>([]);
+  const [discount, setDiscount] = useState<number>(0);
+  const [formValues, setFormValues] = useState({
+    firstname: '',
+    lastName: '',
+    phone: '',
+    email: '',
+    address: '',
+    city: '',
+    province: '',
+    zipCode: '',
+  });
+
+  const [formErrors, setFormErrors] = useState({
+    firstName: false,
+    lastName: false,
+    address: false,
+    city: false,
+    zipCode: false,
+    phone: false,
+    email: false,
+    province: false,
+  });
+
+  useEffect(() => {
+    const getCartItems = () => {
+      const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+      return Array.isArray(storedCart) ? storedCart : [];
+    };
+    setCartItems(getCartItems());
+
+    console.log("Cart Items:", getCartItems()); // ✅ Debugging Line
+
+    const appliedDiscount = localStorage.getItem("appliedDiscount");
+    if (appliedDiscount) {
+      setDiscount(Number(appliedDiscount));
+    }
+  }, []);
+
+  // ✅ Debugging: Check if the structure is correct
+  console.log("Cart Items State:", cartItems);
+
+  const subTotal = cartItems.reduce(
+    (total, item) => total + (item.price || 0) * (item.inventory || 1), 
+    0
+  );
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormValues({
+      ...formValues,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+  const validateForm = () => {
+    const error = {
+      firstName: !formValues.firstname,
+      lastName: !formValues.lastName,
+      address: !formValues.address,
+      city: !formValues.city,
+      province: !formValues.province,
+      zipCode: !formValues.zipCode,
+      phone: !formValues.phone,
+      email: !formValues.email,
+    };
+    setFormErrors(error);
+    return Object.values(error).every((err) => !err);
+  }
+
+  const handlePlaceOrder = async () => {
+    if (!validateForm()) {
+      Swal.fire(
+        "Error!",
+        "Please fill all the required fields",
+        "error"
+      );
+      return;
+    }
+
+    Swal.fire({
+      title: "Processing your order...",
+      text: "Please wait a moment.",
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Proceed",
+    }).then((result: { isConfirmed: boolean }) => {
+      if (result.isConfirmed) {
+        // Place Order Logic
+        toast.success("Order has been placed successfully");
+        localStorage.removeItem("appliedDiscount");
+      }
+    });
+  }
+
   return (
-    <div>
-      {/* Background Image */}
-      <Image
-        src="/checkout.png"
-        alt="Checkout background"
-        width={1440}
-        height={316}
-        priority
-        className="w-full object-cover"
-      />
+    <div className='min-h-screen bg-gray-50'>
+      <div className='mt-6'>
+        <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'>
+          <nav className='flex items-center gap-2 py-4'>
+            <Link 
+              href={"/Cart"}
+              className='text-[#666666] hover:text-black transition text-sm'
+            >
+              Cart
+            </Link>
+            <CgChevronRight/>
+            <span> Checkout </span>
+          </nav>
+        </div>
+      </div>
 
-      {/* Main Content */}
-      <div className="bg-gray-50 min-h-screen py-8">
-        <div className="container mx-auto px-4 lg:px-8">
-          <h1 className="text-2xl font-bold mb-8">Billing Details</h1>
+      <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+          <div className='bg-white border rounded-lg p-6 space-y-4'>
+            <h2 className='text-lg font-semibold mb-4'>Order Summary</h2>
+            {cartItems.length > 0 ? (
+              cartItems.map((item) => (
+                <div key={item._id} className='flex items-center gap-4 py-3 border-b'>
+                  <div className='w-16 h-16 rounded overflow-hidden'>
+                    {item.productImage && (
+                      <Image
+                        src={urlFor(item.productImage).url()}
+                        alt='Product Image'
+                        width={50}
+                        height={50}
+                        className='object-cover w-full h-full'
+                      />
+                    )}
+                  </div>
+                  <div className='flex-1'>
+                    <h3 className='item-sm font-medium'>{item.title || "No Title"}</h3>
+                    <p className='text-sm text-gray-700'>Price: <strong>${item.price || 0}</strong></p>
+                    <p className='text-sm text-gray-700'>Quantity: <strong>{item.inventory || 1}</strong></p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className='text-sm font-medium'>Your cart is empty</p>
+            )}
+            <div className='text-right pt-4'>
+              <p className='text-sm'>
+                Subtotal: 
+              <span className='font-bold'>${subTotal.toFixed(2)}</span>
+              </p>
+              <p className='text-sm'>
+                Discount:
+                <span className='font-bold'>${discount}</span>
+              </p>
+              <p className='text-sm font-bold'>
+                Total:${subTotal.toFixed(2)}
+              </p>
+            </div>
+          </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Billing Form */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <form className="space-y-4">
+          {/* Billing Form */}
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <form className="space-y-4">
+              <div>
+                <h2 className="font-bold">Billing Information</h2>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -35,10 +178,18 @@ const Checkout = () => {
                     </label>
                     <input
                       type="text"
+                      id="firstname" // Added id here
                       className="w-full border rounded-lg p-2"
-                      placeholder="John"
+                      placeholder="Muhammad"
+                      value={formValues.firstname}
+                      onChange={handleInputChange}
                       required
                     />
+                    {formErrors.firstName && (
+                      <p className="text-red-500 text-sm">
+                        First Name is Required
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -46,27 +197,24 @@ const Checkout = () => {
                     </label>
                     <input
                       type="text"
+                      id="lastName" // Added id here
                       className="w-full border rounded-lg p-2"
-                      placeholder="Doe"
+                      placeholder="Ahmed"
+                      value={formValues.lastName}
+                      onChange={handleInputChange}
                       required
                     />
+                    {formErrors.lastName && (
+                      <p className="text-red-500 text-sm">
+                        Last Name is Required
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Company Name (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full border rounded-lg p-2"
-                    placeholder="Company Inc."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Country / Region
+                    City
                   </label>
                   <select
                     className="w-full border rounded-lg p-2"
@@ -74,37 +222,58 @@ const Checkout = () => {
                     required
                   >
                     <option value="" disabled>
-                      Select a country
+                      Select a city
                     </option>
-                    <option value="United States">United States</option>
-                    <option value="Canada">Canada</option>
-                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="Karachi">Karachi</option>
+                    <option value="Lahore">Lahore</option>
+                    <option value="Islamabad">Islamabad</option>
                   </select>
+                  {formErrors.city && (
+                    <p className="text-red-500 text-sm">
+                      City is Required
+                    </p>
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Street Address
+                    Address
                   </label>
                   <input
                     type="text"
+                    id="address" // Added id here
                     className="w-full border rounded-lg p-2"
                     placeholder="1234 Main St"
+                    value={formValues.address}
+                    onChange={handleInputChange}
                     required
                   />
+                  {formErrors.address && (
+                    <p className="text-red-500 text-sm">
+                      Address is Required
+                    </p>
+                  )}
                 </div>
 
-                <div>
+                {/* <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Town / City
                   </label>
                   <input
                     type="text"
+                    id="city" // Added id here
                     className="w-full border rounded-lg p-2"
                     placeholder="New York"
+                    value={formValues.city}
+                    onChange={handleInputChange}
                     required
                   />
-                </div>
+                  {formErrors.city && (
+                    <p className="text-red-500 text-sm">
+                      City Name is Required
+                    </p>
+                  )}
+                </div> */}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -113,10 +282,18 @@ const Checkout = () => {
                     </label>
                     <input
                       type="text"
+                      id="province" // Added id here
                       className="w-full border rounded-lg p-2"
                       placeholder="State / Province"
+                      value={formValues.province}
+                      onChange={handleInputChange}
                       required
                     />
+                    {formErrors.province && (
+                      <p className="text-red-500 text-sm">
+                        Province Name is Required
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -124,8 +301,11 @@ const Checkout = () => {
                     </label>
                     <input
                       type="text"
+                      id="zipCode" // Added id here
                       className="w-full border rounded-lg p-2"
                       placeholder="10001"
+                      value={formValues.zipCode}
+                      onChange={handleInputChange}
                       required
                     />
                   </div>
@@ -137,10 +317,18 @@ const Checkout = () => {
                   </label>
                   <input
                     type="tel"
+                    id="phone" // Added id here
                     className="w-full border rounded-lg p-2"
                     placeholder="+1 234 567 8900"
+                    value={formValues.phone}
+                    onChange={handleInputChange}
                     required
                   />
+                  {formErrors.phone && (
+                    <p className="text-red-500 text-sm">
+                      Phone Number is Required
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -149,10 +337,18 @@ const Checkout = () => {
                   </label>
                   <input
                     type="email"
+                    id="email" // Added id here
                     className="w-full border rounded-lg p-2"
                     placeholder="you@example.com"
+                    value={formValues.email}
+                    onChange={handleInputChange}
                     required
                   />
+                  {formErrors.email && (
+                    <p className="text-red-500 text-sm">
+                      Email Address is Required
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -165,96 +361,19 @@ const Checkout = () => {
                     rows={4}
                   ></textarea>
                 </div>
-              </form>
-            </div>
-
-            {/* Order Summary */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-bold mb-4">Your Order</h2>
-              <div className="border-b pb-4 mb-4">
-                <div className="flex justify-between mb-2">
-                  <span>Product</span>
-                  <span>Subtotal</span>
-                </div>
-                <div className="flex justify-between mb-2">
-                  <span>Asgaard Sofa × 1</span>
-                  <span>₹24,299.00</span>
-                </div>
-                <div className="flex justify-between font-medium">
-                  <span>Total</span>
-                  <span className="text-xl text-gray-900 font-bold">
-                    ₹250,000.00
-                  </span>
-                </div>
               </div>
-
-              {/* Payment Options */}
-              <div>
-                <h3 className="font-medium text-lg mb-2">Payment Method</h3>
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      name="payment"
-                      className="border-gray-400"
-                      defaultChecked
-                    />
-                    <span>Direct Bank Transfer</span>
-                  </label>
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      name="payment"
-                      className="border-gray-400"
-                    />
-                    <span>Cash on Delivery</span>
-                  </label>
-                </div>
-
-                <p className="text-gray-600 text-sm mt-4">
-                  Your personal data will be used to process your order and
-                  support your experience.
-                </p>
-
-                <button className="bg-black text-white w-full py-3 mt-6 rounded-lg hover:bg-gray-800">
-                  Place Order
-                </button>
-              </div>
-            </div>
+            </form>
+            <button
+              className="w-full h-12 bg-blue-500 hover:bg-blue-700 text-white rounded"
+              onClick={handlePlaceOrder}
+            >
+              Place Order
+            </button>
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="bg-pink-100 py-8">
-        <div className="container mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div>
-            <GoTrophy size={40} className="mx-auto text-gray-800" />
-            <h4 className="font-bold text-gray-800">High Quality</h4>
-            <p className="text-gray-600 text-sm">Crafted from top materials</p>
-          </div>
-          <div>
-            <AiOutlineSafetyCertificate
-              size={40}
-              className="mx-auto text-gray-800"
-            />
-            <h4 className="font-bold text-gray-800">Warranty Protection</h4>
-            <p className="text-gray-600 text-sm">Over 2 years</p>
-          </div>
-          <div>
-            <MdOutlineLocalShipping size={40} className="mx-auto text-gray-800" />
-            <h4 className="font-bold text-gray-800">Free Shipping</h4>
-            <p className="text-gray-600 text-sm">Orders over $50</p>
-          </div>
-          <div>
-            <RiCustomerService2Line size={40} className="mx-auto text-gray-800" />
-            <h4 className="font-bold text-gray-800">24/7 Support</h4>
-            <p className="text-gray-600 text-sm">Dedicated support</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };
 
-export default Checkout;
+export default CheckoutPage;
