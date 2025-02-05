@@ -36,7 +36,7 @@ const CartPage = () => {
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Yes, remove it!",
-    }).then((result: { isConfirmed: any; }) => {
+    }).then((result: { isConfirmed: boolean }) => {
       if (result.isConfirmed) {
         removeFromCart(id);
         setCartItems(cartItems.filter(item => item.id !== id));
@@ -58,7 +58,7 @@ const CartPage = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Proceed",
-    }).then((result: { isConfirmed: any; }) => {
+    }).then((result: { isConfirmed: boolean }) => {
       if (result.isConfirmed) {
         Swal.fire(
           "Success!", 
