@@ -36,18 +36,30 @@ export const CheckoutPage = () => {
 
   useEffect(() => {
     const getCartItems = () => {
-      const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-      return Array.isArray(storedCart) ? storedCart : [];
+      const storedCart = localStorage.getItem("cart");
+      if (storedCart) {
+        try {
+          const parsedCart = JSON.parse(storedCart);
+          return Array.isArray(parsedCart) ? parsedCart : [];
+        } catch (error) {
+          console.error("Error parsing cart data:", error);
+          return [];
+        }
+      }
+      return [];
     };
-    setCartItems(getCartItems());
 
-    console.log("Cart Items:", getCartItems()); // ✅ Debugging Line
+    const storedItems = getCartItems();
+    setCartItems(storedItems);
+
+    console.log("Cart Items Retrieved:", storedItems);
 
     const appliedDiscount = localStorage.getItem("appliedDiscount");
     if (appliedDiscount) {
       setDiscount(Number(appliedDiscount));
     }
   }, []);
+  
 
   // ✅ Debugging: Check if the structure is correct
   console.log("Cart Items State:", cartItems);
