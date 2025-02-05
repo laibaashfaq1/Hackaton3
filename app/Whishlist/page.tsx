@@ -1,9 +1,12 @@
 import React from 'react'
+import WishList from '../components/whishlist'
 
-const wishList = () => {
+const Wishlist = () => {
   return (
-    <div className='felx flex-col '>Ooops!😮 You dont have an item in your wishlist😕</div>
+    <div>
+      <WishList/>
+    </div>
   )
 }
 
-export default wishList
+export default Wishlist

@@ -15,7 +15,7 @@ const Navbar = () => {
   const icons = [
     { icon: <CgProfile />, link: "/Profile", label: "Profile" },
     { icon: <IoSearchSharp />, link: "/SearchBar", label: "Search" },
-    { icon: <FaRegHeart />, link: "/wishlist", label: "Wishlist" },
+    { icon: <FaRegHeart />, link: "/Wishlist", label: "Wishlist" },
     { icon: <BsCart3 />, link: "/Cart", label: "Cart" },
   ];
 

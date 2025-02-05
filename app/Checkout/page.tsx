@@ -1,5 +1,6 @@
 'use client'
 
+import { client } from '@/sanity/lib/client'
 import { urlFor } from '@/sanity/lib/image'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -48,18 +49,19 @@ export const CheckoutPage = () => {
       }
       return [];
     };
+    
 
     const storedItems = getCartItems();
     setCartItems(storedItems);
-
     console.log("Cart Items Retrieved:", storedItems);
+    
 
     const appliedDiscount = localStorage.getItem("appliedDiscount");
     if (appliedDiscount) {
       setDiscount(Number(appliedDiscount));
     }
   }, []);
-  
+
 
   // ✅ Debugging: Check if the structure is correct
   console.log("Cart Items State:", cartItems);
@@ -116,6 +118,33 @@ export const CheckoutPage = () => {
         localStorage.removeItem("appliedDiscount");
       }
     });
+
+    //creating order
+    const orderData={
+      _type:"order",
+      firstName: formValues.firstname,
+      lastName: formValues.lastName,
+      address: formValues.address,
+      city: formValues.city,
+      zipCode: formValues.zipCode,
+      phone: formValues.phone,
+      email: formValues.email,
+      province: formValues.province,
+      cartItems: cartItems.map(item => ({
+        type: "reference",
+        ref: item._id
+      })),
+      total: subTotal,
+      discount:discount,
+      orderDate:new Date().toISOString
+    };
+
+    try{
+      await client.create(orderData)
+      localStorage.removeItem("appliedDiscount")
+    }catch(error){
+      console.log("error creating order",error)
+    }
   }
 
   return (
@@ -140,29 +169,30 @@ export const CheckoutPage = () => {
           <div className='bg-white border rounded-lg p-6 space-y-4'>
             <h2 className='text-lg font-semibold mb-4'>Order Summary</h2>
             {cartItems.length > 0 ? (
-              cartItems.map((item) => (
-                <div key={item._id} className='flex items-center gap-4 py-3 border-b'>
-                  <div className='w-16 h-16 rounded overflow-hidden'>
-                    {item.productImage && (
-                      <Image
-                        src={urlFor(item.productImage).url()}
-                        alt='Product Image'
-                        width={50}
-                        height={50}
-                        className='object-cover w-full h-full'
-                      />
-                    )}
-                  </div>
-                  <div className='flex-1'>
-                    <h3 className='item-sm font-medium'>{item.title || "No Title"}</h3>
-                    <p className='text-sm text-gray-700'>Price: <strong>${item.price || 0}</strong></p>
-                    <p className='text-sm text-gray-700'>Quantity: <strong>{item.inventory || 1}</strong></p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className='text-sm font-medium'>Your cart is empty</p>
-            )}
+  cartItems.map((item) => (
+    <div key={item._id} className='flex items-center gap-4 py-3 border-b'>
+      <div className='w-16 h-16 rounded overflow-hidden'>
+        {item.productImage && (
+          <Image
+            src={urlFor(item.productImage).url()}
+            alt='Product Image'
+            width={50}
+            height={50}
+            className='object-cover w-full h-full'
+          />
+        )}
+      </div>
+      <div className='flex-1'>
+        <h3 className='item-sm font-medium'>{item.title || "No Title"}</h3>
+        <p className='text-sm text-gray-700'>Price: <strong>${item.price || 0}</strong></p>
+        <p className='text-sm text-gray-700'>Quantity: <strong>{item.inventory || 1}</strong></p>
+      </div>
+    </div>
+  ))
+) : (
+  <p className='text-sm font-medium'>Your cart is empty</p>
+)}
+
             <div className='text-right pt-4'>
               <p className='text-sm'>
                 Subtotal: 
@@ -225,27 +255,30 @@ export const CheckoutPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    City
-                  </label>
-                  <select
-                    className="w-full border rounded-lg p-2"
-                    defaultValue=""
-                    required
-                  >
-                    <option value="" disabled>
-                      Select a city
-                    </option>
-                    <option value="Karachi">Karachi</option>
-                    <option value="Lahore">Lahore</option>
-                    <option value="Islamabad">Islamabad</option>
-                  </select>
-                  {formErrors.city && (
-                    <p className="text-red-500 text-sm">
-                      City is Required
-                    </p>
-                  )}
-                </div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    City
+  </label>
+  <select
+    className="w-full border rounded-lg p-2"
+    id="city" // Added id here
+    value={formValues.city} // Bind the value to formValues
+    onChange={(e) => setFormValues({ ...formValues, city: e.target.value })} // Update formValues on change
+    required
+  >
+    <option value="" disabled>
+      Select a city
+    </option>
+    <option value="Karachi">Karachi</option>
+    <option value="Lahore">Lahore</option>
+    <option value="Islamabad">Islamabad</option>
+  </select>
+  {formErrors.city && (
+    <p className="text-red-500 text-sm">
+      City is Required
+    </p>
+  )}
+</div>
+
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
