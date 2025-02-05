@@ -188,10 +188,10 @@ export const CheckoutPage = () => {
         <p className='text-sm text-gray-700'>Quantity: <strong>{item.inventory || 1}</strong></p>
       </div>
     </div>
-  ))
-) : (
-  <p className='text-sm font-medium'>Your cart is empty</p>
-)}
+       ))
+        ) : (
+           <p className='text-sm font-medium'>Your cart is empty</p>
+             )}
 
             <div className='text-right pt-4'>
               <p className='text-sm'>
@@ -255,29 +255,29 @@ export const CheckoutPage = () => {
                 </div>
 
                 <div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">
-    City
-  </label>
-  <select
-    className="w-full border rounded-lg p-2"
-    id="city" // Added id here
-    value={formValues.city} // Bind the value to formValues
-    onChange={(e) => setFormValues({ ...formValues, city: e.target.value })} // Update formValues on change
-    required
-  >
-    <option value="" disabled>
-      Select a city
-    </option>
-    <option value="Karachi">Karachi</option>
-    <option value="Lahore">Lahore</option>
-    <option value="Islamabad">Islamabad</option>
-  </select>
-  {formErrors.city && (
-    <p className="text-red-500 text-sm">
-      City is Required
-    </p>
-  )}
-</div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                   City
+                  </label>
+                    <select
+                     className="w-full border rounded-lg p-2"
+                     id="city" // Added id here
+                     value={formValues.city} // Bind the value to formValues
+                     onChange={(e) => setFormValues({ ...formValues, city: e.target.value })} // Update formValues on change
+                     required
+                     >
+                        <option value="" disabled>
+                           Select a city
+                        </option>
+                         <option value="Karachi">Karachi</option>
+                          <option value="Lahore">Lahore</option>
+                           <option value="Islamabad">Islamabad</option>
+                    </select>
+                          {formErrors.city && (
+                         <p className="text-red-500 text-sm">
+                     City is Required
+                            </p>
+                       )}
+                  </div>
 
 
                 <div>
