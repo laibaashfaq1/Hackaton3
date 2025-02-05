@@ -95,14 +95,10 @@ export const CheckoutPage = () => {
 
   const handlePlaceOrder = async () => {
     if (!validateForm()) {
-      Swal.fire(
-        "Error!",
-        "Please fill all the required fields",
-        "error"
-      );
+      Swal.fire("Error!", "Please fill all the required fields", "error");
       return;
     }
-
+  
     Swal.fire({
       title: "Processing your order...",
       text: "Please wait a moment.",
@@ -111,41 +107,40 @@ export const CheckoutPage = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Proceed",
-    }).then((result: { isConfirmed: boolean }) => {
+    }).then(async (result: { isConfirmed: boolean }) => {
       if (result.isConfirmed) {
-        // Place Order Logic
-        toast.success("Order has been placed successfully");
-        localStorage.removeItem("appliedDiscount");
+        // Creating order
+        const orderData = {
+          _type: "order",
+          firstName: formValues.firstname,
+          lastName: formValues.lastName,
+          address: formValues.address,
+          city: formValues.city,
+          zipCode: formValues.zipCode,
+          phone: formValues.phone,
+          email: formValues.email,
+          province: formValues.province,
+          cartItems: cartItems.map((item) => ({
+            _type: "reference",
+            _ref: item._id,
+          })),
+          total: subTotal,
+          discount: discount,
+          orderDate: new Date().toISOString(), // Fixed function call
+        };
+  
+        try {
+          await client.create(orderData); // Fixed missing await
+          toast.success("Order has been placed successfully");
+          localStorage.removeItem("appliedDiscount");
+        } catch (error) {
+          console.error("Error creating order:", error);
+          Swal.fire("Error!", "Failed to place the order. Try again.", "error");
+        }
       }
     });
-
-    //creating order
-    const orderData={
-      _type:"order",
-      firstName: formValues.firstname,
-      lastName: formValues.lastName,
-      address: formValues.address,
-      city: formValues.city,
-      zipCode: formValues.zipCode,
-      phone: formValues.phone,
-      email: formValues.email,
-      province: formValues.province,
-      cartItems: cartItems.map(item => ({
-        type: "reference",
-        ref: item._id
-      })),
-      total: subTotal,
-      discount:discount,
-      orderDate:new Date().toISOString
-    };
-
-    try{
-      await client.create(orderData)
-      localStorage.removeItem("appliedDiscount")
-    }catch(error){
-      console.log("error creating order",error)
-    }
-  }
+  };
+  
 
   return (
     <div className='min-h-screen bg-gray-50'>
