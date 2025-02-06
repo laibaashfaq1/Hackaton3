@@ -81,6 +81,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
         quantity: 1,
         selectedColor: selectedColor,
         selectedSize: selectedSize,
+        title: product.title
       });
     } else {
       console.error("Product is not available to add to cart.");

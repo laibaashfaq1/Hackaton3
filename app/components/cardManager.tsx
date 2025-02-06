@@ -108,6 +108,7 @@ export default function CardManager() {
                 addToCart({
                   id: product._id,
                   heading: product.title,
+                  title:product.title,
                   price: product.price,
                   image: product.productImage ? urlFor(product.productImage)?.url() : "",
                   quantity: 1,

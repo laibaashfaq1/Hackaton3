@@ -155,6 +155,7 @@ export default function Shop() {
                       quantity: 1,
                       selectedColor: selectedColor,
                       selectedSize: selectedSize,
+                      title: product.title
                     })
                   }
                   className="w-full py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-yellow-500 transition"

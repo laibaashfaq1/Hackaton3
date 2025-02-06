@@ -163,18 +163,18 @@ export const CheckoutPage = () => {
           <div className='bg-white border rounded-lg p-6 space-y-4'>
             <h2 className='text-lg font-semibold mb-4'>Order Summary</h2>
             {cartItems.length > 0 ? (
-  cartItems.map((item) => (
-    <div key={item._id} className='flex items-center gap-4 py-3 border-b'>
+  cartItems.map((item,index) => (
+    <div key={item._id || index} className='flex items-center gap-4 py-3 border-b'>
       <div className='w-16 h-16 rounded overflow-hidden'>
-        {item.productImage && (
-          <Image
-            src={urlFor(item.productImage).url()}
-            alt='Product Image'
-            width={50}
-            height={50}
-            className='object-cover w-full h-full'
-          />
-        )}
+      {item.image && (
+                      <Image
+                        src={urlFor(item.image).url()}
+                        alt='image'
+                        width={50}
+                        height={50}
+                        className="object-cover "
+                      />
+                    )}
       </div>
       <div className='flex-1'>
         <h3 className='item-sm font-medium'>{item.title || "No Title"}</h3>
@@ -416,3 +416,139 @@ export const CheckoutPage = () => {
 };
 
 export default CheckoutPage;
+
+
+
+
+
+// 'use client'
+
+// import React, { useEffect, useState } from 'react'
+// import { getCartItems } from '../Cart/action'
+// import Image from 'next/image'
+// import Link from 'next/link'
+// import { urlFor } from '@/sanity/lib/image'
+// import { CgChevronRight } from 'react-icons/cg'
+
+// const Checkout = () => {
+
+//   const [cartItems, setCartItems] = useState<Product[]>([])
+//   const [discount, setDiscount] = useState<number>(0)
+//   const [formValues, setFormValues] = useState({
+//     firstName: "",
+//     lastName: "",
+//     email: "",
+//     phone: "",
+//     address: "",
+//     zipCode: "",
+//     city: "",
+//   })
+
+//   const [formErrors, setFormErrors] = useState({
+//     firstName: false,
+//     lastName: false,
+//     email: false,
+//     phone: false,
+//     address: false,
+//     zipCode: false,
+//     city: false,
+//   })
+
+//   useEffect(() => {
+//     setCartItems(getCartItems())
+//     const appliedDiscount = localStorage.getItem("appliedDiscount")
+//     if (appliedDiscount) {
+//       setDiscount(Number(appliedDiscount))
+//     }
+//   }, [])
+
+//   const subTotal = cartItems.reduce(
+//     (total, item) => total + item.price * item.inventory, 0)
+
+//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     setFormValues({
+//       ...formValues,
+//       [e.target.name]: e.target.value
+//     })
+//   }
+
+//   const validateForm = () => {
+//     const error = {
+//       firstName: !formValues.firstName,
+//       lastName: !formValues.lastName,
+//       email: !formValues.email.includes("@"),
+//       phone: !formValues.phone.match(/^[0-9]{10}$/),
+//       address: !formValues.address,
+//       zipCode: !formValues.zipCode.match(/^[0-9]{6}$/),
+//       city: !formValues.city,
+//     }
+//     setFormErrors(error)
+//     return Object.values(error).every((error) => !error)
+//   }
+
+//   const handlePlaceOrder = () => {
+//     if (validateForm()) {
+//       localStorage.removeItem("appliedDiscount")
+//     }
+//   }
+
+//   return (
+//     <div className='min-h-screen bg-gray-50'>
+//       <div className='mt-6'>
+//         <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'>
+//           <nav className='flex items-center gap-2 py-4'>
+//             <Link 
+//             href={'/Cart'}
+//             className='text-[#666666] hover:text-black transition text-sm'
+//             >
+//               Cart
+//             </Link>
+//             <CgChevronRight className="w-4 h-4 text-[#666666]" />
+//             <span className='text-sm'>
+//               Checkout
+//             </span>
+//           </nav>
+//         </div>
+//       </div>
+//       {/* Main Content */}
+//       <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
+//         <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+//           {/* Order Summary */}
+//           <div className='bg-white border rounded-lg p-6 space-y-4'>
+//             <h2 className='text-lg font-semibold mb-4'>
+//               Order Summary
+//             </h2>
+//             {cartItems.length > 0 ? (
+//               cartItems.map((item) => (
+//                 <div key={item._id}>
+//                   <div className='image'>
+//                     {item.image && (
+//                       <Image
+//                         src={urlFor(item.image).url()}
+//                         alt='image'
+//                         width={50}
+//                         height={50}
+//                         className="object-cover "
+//                       />
+//                     )}
+//                   </div>
+//                   <div className='flex-1'>
+//                     <h3 className='text-sm font-medium'>
+//                       {item.title||'Product Name'}
+//                     </h3>
+//                     <p className='text-xs text-grya-500'>Quantity: {item.quantity}</p>
+//                     <p className='text-sm-font-semibold'>${item.price}</p>
+//                   </div>
+//                 </div>
+//               ))
+//             ) : (
+//               <p className='text-sm text-gray-500'>No items in cart</p>
+//             )}
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   )
+// }
+
+// export default Checkout
