@@ -14,8 +14,8 @@ export default {
             type:"string",
         },
         {
-            name:"adress",
-            title:"Adress",
+            name:"address",
+            title:"Address",
             type:"string",
         },
         {

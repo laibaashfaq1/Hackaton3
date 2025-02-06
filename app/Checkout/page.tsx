@@ -73,12 +73,23 @@ export const CheckoutPage = () => {
       confirmButtonText: "Proceed",
     }).then(async (result) => {
       if (result.isConfirmed) {
+
         const orderData = {
           _type: "order",
-          ...formValues,
-          cartItems: cartItems.map((item) => ({ _type: "reference", _ref: item._id })),
-          total: subTotal - discount,
-          discount,
+          firstname:formValues.firstname,
+          laststName:formValues.lastName,
+          address:formValues.address,
+          phone:formValues.phone,
+          email:formValues.email,
+          city:formValues.city,
+          province:formValues.province,
+          zipcode:formValues.zipcode,
+          cartItems: cartItems.map((item) => (
+            { type: "reference", 
+              ref: item._id }
+            )),
+          total: subTotal,
+          discount:discount,
           orderDate: new Date().toISOString(),
         };
 
