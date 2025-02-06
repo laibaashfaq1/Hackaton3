@@ -1,5 +1,6 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from "react";
+import Swal from "sweetalert2";
 
 // Interface for Cart Item
 interface CartItem {
@@ -69,6 +70,15 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         );
       }
       return [...prevCart, { ...item, quantity: 1 }];
+    });
+
+    // ✅ Show success message when product is added
+    Swal.fire({
+      title: "Success!",
+      text: `${item.title} has been added to the cart.`,
+      icon: "success",
+      timer: 2000,
+      showConfirmButton: false
     });
 
     console.log("Added to Cart:", item);
