@@ -76,7 +76,7 @@ export const CheckoutPage = () => {
         const orderData = {
           _type: "order",
           firstname:formValues.firstname,
-          laststName:formValues.lastName,
+          lastName:formValues.lastName,
           address:formValues.address,
           phone:formValues.phone,
           email:formValues.email,
