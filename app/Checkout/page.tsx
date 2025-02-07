@@ -107,7 +107,6 @@ export const CheckoutPage = () => {
           }
         } catch (error) {
           console.error("Sanity API Error:", error);
-          const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
           Swal.fire("Error!", `Failed to place the order`, "error");
         }        
       }
