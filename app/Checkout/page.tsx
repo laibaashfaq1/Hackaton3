@@ -58,57 +58,63 @@ export const CheckoutPage = () => {
 
   const handlePlaceOrder = async () => {
     if (!validateForm()) {
-        Swal.fire("Error!", "Please fill all the required fields", "error");
-        return;
+      Swal.fire("Error!", "Please fill all the required fields", "error");
+      return;
     }
-
+  
     Swal.fire({
-        title: "Processing your order...",
-        text: "Please wait a moment.",
-        icon: "info",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Proceed",
+      title: "Processing your order...",
+      text: "Please wait a moment.",
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Proceed",
     }).then(async (result) => {
-        if (result.isConfirmed) {
-            const orderData = {
-                _type: "order",
-                firstname: formValues.firstname,
-                lastName: formValues.lastName,
-                address: formValues.address,
-                phone: formValues.phone,
-                email: formValues.email,
-                city: formValues.city,
-                province: formValues.province,
-                zipcode: formValues.zipCode,
-                cartItems: cartItems.map((item) => (
-                    { type: "reference", ref: item._id }
-                )),
-                total: subTotal,
-                discount: discount,
-                orderDate: new Date().toISOString(),
-            };
-
-            try {
-                console.log("Order data:", orderData);
-                const response = await client.create(orderData);
-                console.log("Response:", response);
-                if (response && response._id) {
-                    Swal.fire("Success!", "Your order has been placed successfully!", "success");
-                    localStorage.removeItem("cart");
-                    localStorage.removeItem("appliedDiscount");
-                    setCartItems([]);
-                } else {
-                    throw new Error("Order creation failed, no ID returned.");
-                }
-            } catch (error) {
-                console.error("Error creating order:", error);
-                Swal.fire("Error!", "Failed to place the order. Try again.", "error");
-            }
-        }
+      if (result.isConfirmed) {
+        const orderData = {
+          _type: "order",
+          firstname: formValues.firstname,
+          lastName: formValues.lastName,
+          address: formValues.address,
+          phone: formValues.phone,
+          email: formValues.email,
+          city: formValues.city,
+          province: formValues.province,
+          zipcode: formValues.zipCode,
+          cartItems: cartItems.map(item => ({
+            _type: "reference",
+            _ref: item._id,
+          })),
+          total: subTotal,
+          discount: discount,
+          orderDate: new Date().toISOString(),
+        };
+  
+        console.log("Sending order data:", orderData);
+  
+        try {
+          const response = await client.create(orderData);
+          console.log("Order response:", response);
+  
+          if (response && response._id) {
+            Swal.fire("Success!", "Your order has been placed successfully!", "success");
+            localStorage.removeItem("Cart");
+            localStorage.removeItem("appliedDiscount");
+            setCartItems([]);
+          } else {
+            throw new Error("Order creation failed, no ID returned.");
+          }
+        } catch (error) {
+          console.error("Sanity API Error:", error);
+          const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+          Swal.fire("Error!", `Failed to place the order`, "error");
+        }        
+      }
     });
-};
+  };
+  
+  
 
 
   return (
