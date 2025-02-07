@@ -81,7 +81,7 @@ export const CheckoutPage = () => {
           email: formValues.email,
           city: formValues.city,
           province: formValues.province,
-          zipcode: formValues.zipCode,
+          zipCode: formValues.zipCode,
           cartItems: cartItems.map(item => ({
             _type: "reference",
             _ref: item._id,
