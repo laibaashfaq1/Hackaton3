@@ -15,7 +15,7 @@ interface Product {
   title: string;
   price: number;
   quantity: number;
-  image?: any;
+  image?: undefined;
 }
 
 export const CheckoutPage = () => {
