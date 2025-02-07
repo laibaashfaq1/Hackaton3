@@ -58,57 +58,58 @@ export const CheckoutPage = () => {
 
   const handlePlaceOrder = async () => {
     if (!validateForm()) {
-      Swal.fire("Error!", "Please fill all the required fields", "error");
-      return;
+        Swal.fire("Error!", "Please fill all the required fields", "error");
+        return;
     }
 
     Swal.fire({
-      title: "Processing your order...",
-      text: "Please wait a moment.",
-      icon: "info",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Proceed",
+        title: "Processing your order...",
+        text: "Please wait a moment.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Proceed",
     }).then(async (result) => {
-      if (result.isConfirmed) {
+        if (result.isConfirmed) {
+            const orderData = {
+                _type: "order",
+                firstname: formValues.firstname,
+                lastName: formValues.lastName,
+                address: formValues.address,
+                phone: formValues.phone,
+                email: formValues.email,
+                city: formValues.city,
+                province: formValues.province,
+                zipcode: formValues.zipCode,
+                cartItems: cartItems.map((item) => (
+                    { type: "reference", ref: item._id }
+                )),
+                total: subTotal,
+                discount: discount,
+                orderDate: new Date().toISOString(),
+            };
 
-        const orderData = {
-          _type: "order",
-          firstname:formValues.firstname,
-          lastName:formValues.lastName,
-          address:formValues.address,
-          phone:formValues.phone,
-          email:formValues.email,
-          city:formValues.city,
-          province:formValues.province,
-          zipcode:formValues.zipcode,
-          cartItems: cartItems.map((item) => (
-            { type: "reference", 
-              ref: item._id }
-            )),
-          total: subTotal,
-          discount:discount,
-          orderDate: new Date().toISOString(),
-        };
-
-        try {
-          const response = await client.create(orderData);
-          if (response && response._id) {
-            Swal.fire("Success!", "Your order has been placed successfully!", "success");
-            localStorage.removeItem("cart");
-            localStorage.removeItem("appliedDiscount");
-            setCartItems([]);
-          } else {
-            throw new Error("Order creation failed, no ID returned.");
-          }
-        } catch (error) {
-          console.error("Error creating order:", error);
-          Swal.fire("Error!", "Failed to place the order. Try again.", "error");
+            try {
+                console.log("Order data:", orderData);
+                const response = await client.create(orderData);
+                console.log("Response:", response);
+                if (response && response._id) {
+                    Swal.fire("Success!", "Your order has been placed successfully!", "success");
+                    localStorage.removeItem("cart");
+                    localStorage.removeItem("appliedDiscount");
+                    setCartItems([]);
+                } else {
+                    throw new Error("Order creation failed, no ID returned.");
+                }
+            } catch (error) {
+                console.error("Error creating order:", error);
+                Swal.fire("Error!", "Failed to place the order. Try again.", "error");
+            }
         }
-      }
     });
-  };
+};
+
 
   return (
     <div className='min-h-screen bg-gray-50'>
