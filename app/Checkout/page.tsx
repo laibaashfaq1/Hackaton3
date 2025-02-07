@@ -1,13 +1,22 @@
-'use client'
+'use client';
 
-import { client } from '@/sanity/lib/client'
-import { urlFor } from '@/sanity/lib/image'
-import Image from 'next/image'
-import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
-import { CgChevronRight } from 'react-icons/cg'
+import { client } from '@/sanity/lib/client';
+import { urlFor } from '@/sanity/lib/image';
+import Image from 'next/image';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import { CgChevronRight } from 'react-icons/cg';
 import 'react-toastify/dist/ReactToastify.css';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+
+// Define Product Type
+interface Product {
+  _id: string;
+  title: string;
+  price: number;
+  quantity: number;
+  image?: any;
+}
 
 export const CheckoutPage = () => {
   const [cartItems, setCartItems] = useState<Product[]>([]);
@@ -24,6 +33,7 @@ export const CheckoutPage = () => {
   });
 
   useEffect(() => {
+    // Retrieve cart from localStorage
     const storedCart = localStorage.getItem("cart");
     if (storedCart) {
       try {
@@ -34,6 +44,8 @@ export const CheckoutPage = () => {
         setCartItems([]);
       }
     }
+
+    // Retrieve applied discount
     const appliedDiscount = localStorage.getItem("appliedDiscount");
     if (appliedDiscount) {
       setDiscount(Number(appliedDiscount));
@@ -41,7 +53,7 @@ export const CheckoutPage = () => {
   }, []);
 
   const subTotal = cartItems.reduce(
-    (total, item) => total + (item.price || 0) * (item.inventory || 1),
+    (total, item) => total + (item.price || 0) * (item.quantity || 1),
     0
   );
 
@@ -61,15 +73,15 @@ export const CheckoutPage = () => {
       Swal.fire("Error!", "Please fill all the required fields", "error");
       return;
     }
-  
+
     Swal.fire({
-      title: "Processing your order...",
-      text: "Please wait a moment.",
-      icon: "info",
+      title: "Confirm Order",
+      text: "Are you sure you want to place this order?",
+      icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Proceed",
+      confirmButtonText: "Yes, place order!",
     }).then(async (result) => {
       if (result.isConfirmed) {
         const orderData = {
@@ -83,23 +95,30 @@ export const CheckoutPage = () => {
           province: formValues.province,
           zipCode: formValues.zipCode,
           cartItems: cartItems.map(item => ({
-            _type: "reference",
-            _ref: item._id,
+            _key: item._id,
+            product: {
+              _type: "reference",
+              _ref: item._id,
+            },
+            quantity: item.quantity,
+            price: item.price,
           })),
-          total: subTotal,
+          total: subTotal - discount,
           discount: discount,
           orderDate: new Date().toISOString(),
         };
-  
-        console.log("Sending order data:", orderData);
-  
+
+        console.log("Sending order data:", JSON.stringify(orderData, null, 2));
+
         try {
           const response = await client.create(orderData);
           console.log("Order response:", response);
-  
+
           if (response && response._id) {
             Swal.fire("Success!", "Your order has been placed successfully!", "success");
-            localStorage.removeItem("Cart");
+
+            // Clear cart after successful order
+            localStorage.removeItem("cart");
             localStorage.removeItem("appliedDiscount");
             setCartItems([]);
           } else {
@@ -108,11 +127,11 @@ export const CheckoutPage = () => {
         } catch (error) {
           console.error("Sanity API Error:", error);
           Swal.fire("Error!", `Failed to place the order`, "error");
-        }        
+        }
       }
     });
   };
-  
+
   return (
     <div className='min-h-screen bg-gray-50'>
       <div className='mt-6 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'>
@@ -120,7 +139,7 @@ export const CheckoutPage = () => {
           <Link href={'/Cart'} className='text-[#666666] hover:text-black transition text-sm'>
             Cart
           </Link>
-          <CgChevronRight/>
+          <CgChevronRight />
           <span>Checkout</span>
         </nav>
       </div>
@@ -134,7 +153,7 @@ export const CheckoutPage = () => {
               <div>
                 <h3 className='text-sm font-medium'>{item.title || "No Title"}</h3>
                 <p className='text-sm text-gray-700'>Price: <strong>${item.price || 0}</strong></p>
-                <p className='text-sm text-gray-700'>Quantity: <strong>{item.inventory || 1}</strong></p>
+                <p className='text-sm text-gray-700'>Quantity: <strong>{item.quantity || 1}</strong></p>
               </div>
             </div>
           )) : <p className='text-sm font-medium'>Your cart is empty</p>}
@@ -142,7 +161,7 @@ export const CheckoutPage = () => {
           <div className='text-right pt-4'>
             <p className='text-sm'>Subtotal: <span className='font-bold'>${subTotal.toFixed(2)}</span></p>
             <p className='text-sm'>Discount: <span className='font-bold'>${discount}</span></p>
-            <p className='text-sm font-bold'>Total: ${subTotal.toFixed(2)}</p>
+            <p className='text-sm font-bold'>Total: ${(subTotal - discount).toFixed(2)}</p>
           </div>
         </div>
 
@@ -166,7 +185,7 @@ export const CheckoutPage = () => {
               </div>
             ))}
           </form>
-          <button className='w-full h-12 bg-blue-500 hover:bg-blue-700 text-white rounded' onClick={handlePlaceOrder}>
+          <button className='w-full h-12 bg-blue-500 hover:bg-blue-700 text-white rounded mt-4' onClick={handlePlaceOrder}>
             Place Order
           </button>
         </div>
