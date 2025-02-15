@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import SearchBar from '@/app/components/SearchBar';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useCart } from "@/app/Cart/context/CartContext";
+import { urlFor } from "@/sanity/lib/image";
 
 // Define Product Type
 type Product = {
@@ -17,6 +19,7 @@ const Page = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { addToCart } = useCart();
 
   // ✅ Fetch Products from API
   useEffect(() => {
@@ -96,7 +99,25 @@ const Page = () => {
                 <Link href={`/product/${product._id}`}>
                   <h2 className="text-lg font-semibold">{product.title}</h2>
                 </Link>
-                <p className="text-blue-600 font-bold">${product.price}</p>
+                <p className="text-green-800 font-bold">${product.price}</p>
+
+                {/* ✅ Fixed the button issue */}
+                <button 
+                  onClick={() =>
+                    addToCart({
+                      id: product._id,
+                      heading: product.title,
+                      title: product.title,
+                      price: product.price,
+                      image: product.productImage ? urlFor(product.productImage)?.url() : "",
+                      quantity: 1,
+                    })
+                  }
+                  className="w-full py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-yellow-500 transition"
+                >
+                  Add to Cart
+                </button>
+
               </div>
             ))}
           </div>
