@@ -5,7 +5,7 @@ import Image from "next/image";
 import { PortableTextBlock } from "@portabletext/types";
 import { urlFor } from "@/sanity/lib/image";
 import { PortableText } from "next-sanity";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { FaFacebook } from "react-icons/fa6";
 import { AiFillTwitterCircle } from "react-icons/ai";
@@ -24,7 +24,8 @@ interface ProductDetail {
   content: PortableTextBlock[];
 }
 
-export default function Page({ params: { id } }: { params: { id: string } }) {
+export default function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params); // ✅ Fix: Unwrapping params with `use()`
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const { addToCart } = useCart();
   const [selectedColor] = useState<string>("");
@@ -81,7 +82,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
         quantity: 1,
         selectedColor: selectedColor,
         selectedSize: selectedSize,
-        title: product.title
+        title: product.title,
       });
     } else {
       console.error("Product is not available to add to cart.");
@@ -110,9 +111,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
           <div className="flex items-center space-x-2 mb-4">
             {product.isNew && <span className="text-sm text-green-600 font-medium">New Arrival</span>}
             {product.discountPercentage && (
-              <span className="text-sm text-red-600 font-medium">
-                {product.discountPercentage}% Off
-              </span>
+              <span className="text-sm text-red-600 font-medium">{product.discountPercentage}% Off</span>
             )}
           </div>
 
@@ -136,11 +135,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
 
           <div className="flex items-center space-x-4 mb-6">
             <label className="block text-gray-700">Quantity:</label>
-            <input
-              type="number"
-              className="w-16 border rounded p-2 text-center"
-              defaultValue="1"
-            />
+            <input type="number" className="w-16 border rounded p-2 text-center" defaultValue="1" />
           </div>
 
           <div className="flex space-x-4">

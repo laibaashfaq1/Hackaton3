@@ -95,13 +95,8 @@ export const CheckoutPage = () => {
           province: formValues.province,
           zipCode: formValues.zipCode,
           cartItems: cartItems.map(item => ({
-            _key: item._id,
-            product: {
-              _type: "reference",
-              _ref: item._id,
-            },
-            quantity: item.quantity,
-            price: item.price,
+          _type:'ref',
+          _ref:item._id
           })),
           total: subTotal - discount,
           discount: discount,
